@@ -3,6 +3,7 @@ const cors = require("cors");
 const errorHandler = require("./middleware/errorHandler");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const ingestRoutes = require("./routes/ingestRoutes");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/ingest", ingestRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({
