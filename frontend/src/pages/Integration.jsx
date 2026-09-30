@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { sendTestEvent } from '../api/client.js';
-import { addDevEvent } from '../api/devEvents.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -64,7 +63,7 @@ function CodeBlock({ label, code }) {
 
 export default function Integration() {
   const { projectId } = useParams();
-  const { projects, projectsLoading, isDev } = useApp();
+  const { projects, projectsLoading } = useApp();
   const project = projects.find((p) => p._id === projectId);
 
   const [status, setStatus] = useState({ type: 'idle', message: '' });
@@ -102,12 +101,7 @@ export default function Integration() {
     setStatus({ type: 'sending', message: 'Sending test event...' });
     const event = randomEvent(statusCode);
     try {
-      if (isDev) {
-        // DEV ONLY: no backend yet, so store the event locally.
-        addDevEvent(project._id, event);
-      } else {
-        await sendTestEvent(project.apiKey, event);
-      }
+      await sendTestEvent(project.apiKey, event);
       setStatus({
         type: 'success',
         message: `Test event sent successfully (${event.method} ${event.endpoint} → ${event.statusCode}).`,

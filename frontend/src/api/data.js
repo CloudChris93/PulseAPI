@@ -4,15 +4,7 @@ import {
   getEndpointStats,
   getLogs,
 } from './client.js';
-import {
-  getDevEvents,
-  computeSummary,
-  computeTimeseries,
-  computeEndpoints,
-  computeLogs,
-} from './devEvents.js';
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
 // ---- Normalizers: match PulseAPI API Contract v1 exactly.
@@ -65,43 +57,23 @@ function normalizeLogs(raw) {
   };
 }
 
-// ---- Public functions used by pages. `isDev` picks fake vs real data.
+// ---- Public functions used by pages.
 
-export async function fetchSummary(projectId, isDev) {
-  if (isDev) {
-    await wait(300);
-    return normalizeSummary(computeSummary(getDevEvents(projectId)));
-  }
+export async function fetchSummary(projectId) {
   return normalizeSummary(await getAnalyticsSummary(projectId));
 }
 
-export async function fetchTimeseries(projectId, isDev) {
-  if (isDev) {
-    await wait(300);
-    return normalizeTimeseries(computeTimeseries(getDevEvents(projectId)));
-  }
+export async function fetchTimeseries(projectId) {
   return normalizeTimeseries(await getAnalyticsTimeseries(projectId));
 }
 
-export async function fetchEndpoints(projectId, isDev) {
-  if (isDev) {
-    await wait(300);
-    return normalizeEndpoints(computeEndpoints(getDevEvents(projectId)));
-  }
+export async function fetchEndpoints(projectId) {
   return normalizeEndpoints(await getEndpointStats(projectId));
 }
 
 // filters: { method, statusCode, page, limit }
-export async function fetchLogs(projectId, filters, isDev) {
-  const limit = filters.limit || 10;
-  const page = filters.page || 1;
-  if (isDev) {
-    await wait(300);
-    return normalizeLogs(
-      computeLogs(getDevEvents(projectId), { method: filters.method, statusCode: filters.statusCode, page, limit })
-    );
-  }
-  const params = { page, limit };
+export async function fetchLogs(projectId, filters) {
+  const params = { page: filters.page || 1, limit: filters.limit || 10 };
   if (filters.method && filters.method !== 'all') params.method = filters.method;
   if (filters.statusCode && filters.statusCode !== 'all') params.statusCode = filters.statusCode;
   return normalizeLogs(await getLogs(projectId, params));

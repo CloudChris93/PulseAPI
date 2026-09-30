@@ -29,10 +29,9 @@ function StatusBadge({ code }) {
 
 export default function Logs() {
   const { projectId } = useParams();
-  const { projects, projectsLoading, isDev } = useApp();
+  const { projects, projectsLoading } = useApp();
   const project = projects.find((p) => p._id === projectId);
 
-  // Draft = what's selected in the dropdowns. Applied = what was actually requested.
   const [draft, setDraft] = useState(NO_FILTERS);
   const [applied, setApplied] = useState(NO_FILTERS);
   const [page, setPage] = useState(1);
@@ -44,7 +43,7 @@ export default function Logs() {
     let cancelled = false;
     setState((s) => ({ ...s, status: 'loading' }));
 
-    fetchLogs(projectId, { ...applied, page, limit: LIMIT }, isDev)
+    fetchLogs(projectId, { ...applied, page, limit: LIMIT })
       .then((res) => {
         if (!cancelled) setState({ status: 'ready', logs: res.logs, total: res.total, totalPages: res.totalPages });
       })
@@ -55,9 +54,8 @@ export default function Logs() {
     return () => {
       cancelled = true;
     };
-  }, [projectId, project, applied, page, isDev, reloadKey]);
+  }, [projectId, project, applied, page, reloadKey]);
 
-  // Switching to a different project starts fresh.
   useEffect(() => {
     setDraft(NO_FILTERS);
     setApplied(NO_FILTERS);
@@ -94,7 +92,6 @@ export default function Logs() {
   const canPrev = page > 1;
   const canNext = totalPages !== null ? page < totalPages : logs.length === LIMIT;
 
-  // Page numbers to show (a window of up to 5 around the current page).
   const pageNumbers = [];
   if (totalPages !== null) {
     const startPage = Math.max(1, Math.min(page - 2, totalPages - 4));
@@ -111,7 +108,6 @@ export default function Logs() {
         </p>
       </div>
 
-      {/* Filters */}
       <div className="card" style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <label style={{ fontSize: 13, color: '#5b6370', display: 'flex', flexDirection: 'column', gap: 4 }}>
           Method
@@ -206,7 +202,6 @@ export default function Logs() {
             </table>
           </div>
 
-          {/* Pagination */}
           <div
             style={{
               display: 'flex',

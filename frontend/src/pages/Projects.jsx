@@ -22,6 +22,7 @@ export default function Projects() {
 
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
+  const [actionError, setActionError] = useState('');
 
   async function handleCreate(e) {
     e.preventDefault();
@@ -44,20 +45,31 @@ export default function Projects() {
   }
 
   function startEdit(project) {
+    setActionError('');
     setEditingId(project._id);
     setEditName(project.name);
   }
 
   async function saveEdit(id) {
     if (!editName.trim()) return;
-    await updateProject(id, { name: editName.trim() });
-    setEditingId(null);
+    setActionError('');
+    try {
+      await updateProject(id, { name: editName.trim() });
+      setEditingId(null);
+    } catch (err) {
+      setActionError(err.message || 'Could not update the project. Please try again.');
+    }
   }
 
   async function handleDelete(id, projectName) {
     const confirmed = window.confirm(`Delete "${projectName}"? This cannot be undone.`);
     if (!confirmed) return;
-    await deleteProject(id);
+    setActionError('');
+    try {
+      await deleteProject(id);
+    } catch (err) {
+      setActionError(err.message || 'Could not delete the project. Please try again.');
+    }
   }
 
   function openProject(project) {
@@ -73,6 +85,8 @@ export default function Projects() {
           {showForm ? 'Cancel' : '+ New Project'}
         </button>
       </div>
+
+      {actionError && <p className="error-text" style={{ marginBottom: 16 }}>{actionError}</p>}
 
       {showForm && (
         <form onSubmit={handleCreate} className="card" style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 420 }}>

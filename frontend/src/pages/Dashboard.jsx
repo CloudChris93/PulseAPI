@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { useApp } from '../context/AppContext.jsx';
 import { fetchSummary, fetchTimeseries, fetchEndpoints } from '../api/data.js';
-import { seedDevEvents } from '../api/devEvents.js';
 
 function StatCard({ label, value, tone }) {
   return (
@@ -22,7 +21,7 @@ function MethodBadge({ method }) {
 }
 
 export default function Dashboard() {
-  const { selectedProject, projectsLoading, isDev } = useApp();
+  const { selectedProject, projectsLoading } = useApp();
   const projectId = selectedProject?._id;
 
   const [state, setState] = useState({ status: 'idle', summary: null, series: [], endpoints: [] });
@@ -33,11 +32,7 @@ export default function Dashboard() {
     let cancelled = false; // ignore late responses if the user switches project
     setState({ status: 'loading', summary: null, series: [], endpoints: [] });
 
-    Promise.all([
-      fetchSummary(projectId, isDev),
-      fetchTimeseries(projectId, isDev),
-      fetchEndpoints(projectId, isDev),
-    ])
+    Promise.all([fetchSummary(projectId), fetchTimeseries(projectId), fetchEndpoints(projectId)])
       .then(([summary, series, endpoints]) => {
         if (!cancelled) setState({ status: 'ready', summary, series, endpoints });
       })
@@ -48,12 +43,7 @@ export default function Dashboard() {
     return () => {
       cancelled = true;
     };
-  }, [projectId, isDev, reloadKey]);
-
-  function handleSeed() {
-    seedDevEvents(projectId);
-    setReloadKey((k) => k + 1);
-  }
+  }, [projectId, reloadKey]);
 
   if (projectsLoading) return <p style={{ color: '#5b6370' }}>Loading projects...</p>;
 
@@ -97,16 +87,9 @@ export default function Dashboard() {
           <p style={{ color: '#5b6370', fontSize: 14, marginBottom: 16 }}>
             Send your first test event from the Integration page to see analytics.
           </p>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to={`/app/projects/${projectId}/integration`} className="btn btn-primary">
-              Go to Integration
-            </Link>
-            {isDev && (
-              <button className="btn btn-secondary" onClick={handleSeed}>
-                Add sample data (dev only)
-              </button>
-            )}
-          </div>
+          <Link to={`/app/projects/${projectId}/integration`} className="btn btn-primary">
+            Go to Integration
+          </Link>
         </div>
       )}
 

@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext.jsx';
 import Logo from '../components/Logo.jsx';
 
 export default function Login() {
-  const { login, devLogin } = useApp();
+  const { login } = useApp();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ email: '', password: '' });
@@ -32,11 +32,6 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleDevLogin() {
-    devLogin();
-    navigate('/app/dashboard');
   }
 
   return (
@@ -91,21 +86,6 @@ export default function Login() {
             Register
           </Link>
         </p>
-
-        {/* DEV ONLY — remove once real backend login works */}
-        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px dashed #e3e6eb' }}>
-          <button
-            type="button"
-            onClick={handleDevLogin}
-            className="btn btn-secondary"
-            style={{ width: '100%' }}
-          >
-            Dev Login (skip backend)
-          </button>
-          <p style={{ fontSize: 12, color: '#8a91a0', marginTop: 6, textAlign: 'center' }}>
-            Temporary — for previewing /app pages before the backend exists.
-          </p>
-        </div>
       </div>
     </div>
   );
