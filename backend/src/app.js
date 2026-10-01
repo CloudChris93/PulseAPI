@@ -27,6 +27,16 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "PulseAPI API is healthy",
+    data: {
+      status: "ok",
+    },
+  });
+});
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
