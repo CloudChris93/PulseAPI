@@ -84,13 +84,22 @@ const getProjectLogs = async (req, res, next) => {
       ApiLog.countDocuments(filter),
     ]);
 
+    const formattedLogs = logs.map((log) => ({
+      id: log._id.toString(),
+      method: log.method,
+      endpoint: log.endpoint,
+      statusCode: log.statusCode,
+      responseTime: log.responseTime,
+      timestamp: log.timestamp,
+    }));
+
     const pages = total === 0 ? 0 : Math.ceil(total / parsedLimit);
 
     res.status(200).json({
       success: true,
       message: "Project logs retrieved successfully",
       data: {
-        logs,
+        logs: formattedLogs,
         pagination: {
           page: parsedPage,
           limit: parsedLimit,
