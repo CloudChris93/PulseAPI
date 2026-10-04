@@ -15,7 +15,7 @@ It allows developers and API owners to collect API usage data and monitor:
 
 - Christopher Omotayo — Backend Developer / Team Lead
 - Israel — Backend Developer
-- DDL Tech/ Isreal Divine — Frontend Developer
+- DDL Tech/ Dornu Divine — Frontend Developer
 - Muhammed Jameel Suleiman - Frontend Developer
 
 ## Technology Stack
