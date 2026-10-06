@@ -2,6 +2,8 @@
 
 PulseAPI is a full-stack API analytics dashboard built as the Group 44 TS Academy Capstone Project.
 
+[View Live Website](https://pulseapi-frontend-tejn.onrender.com)
+
 It allows developers and API owners to collect API usage data and monitor:
 
 - Total API requests
